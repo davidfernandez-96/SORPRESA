@@ -637,3 +637,103 @@ footer {
     font-size: 1.25rem;
   }
 }
+
+
+.extra-collage {
+  margin-top: 24px;
+}
+
+.collage-secondary {
+  margin-top: 10px;
+}
+
+.extra-collage-text {
+  max-width: 900px;
+  margin: 22px auto 0;
+  text-align: center;
+  line-height: 1.85;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 680px) {
+  .extra-collage-text {
+    font-size: 0.96rem;
+    line-height: 1.75;
+    padding: 0 6px;
+  }
+}
+
+
+/* Collage arreglado para fotos verticales */
+.photo-collage {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.photo-card {
+  margin: 0;
+  padding: 10px;
+  background: rgba(255,255,255,0.86);
+  border-radius: 26px;
+  box-shadow: 0 14px 30px rgba(72, 16, 31, 0.12);
+  border: 1px solid rgba(123, 30, 53, 0.10);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.photo-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 18px 34px rgba(72, 16, 31, 0.16);
+}
+
+.photo-card img {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff8f6, #f8e6eb);
+}
+
+.tilt-left {
+  transform: rotate(-1.5deg);
+}
+
+.tilt-right {
+  transform: rotate(1.5deg);
+}
+
+.extra-collage .section-heading {
+  margin-top: 56px;
+}
+
+@media (max-width: 980px) {
+  .photo-collage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .photo-collage {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .tilt-left,
+  .tilt-right {
+    transform: none;
+  }
+
+  .photo-card {
+    padding: 8px;
+    border-radius: 22px;
+  }
+
+  .photo-card img {
+    border-radius: 16px;
+  }
+}
