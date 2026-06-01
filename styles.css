@@ -737,3 +737,62 @@ footer {
     border-radius: 16px;
   }
 }
+
+
+/* Pantalla inicial: primero solo se ve la portada */
+.splash-screen {
+  min-height: 100svh;
+  width: 100%;
+  transition: opacity 0.65s ease, transform 0.65s ease, filter 0.65s ease;
+}
+
+.hero-exit {
+  opacity: 0;
+  transform: scale(1.03);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.main-content {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.main-content.show-main {
+  display: block;
+  animation: showMainContent 0.75s ease forwards;
+}
+
+@keyframes showMainContent {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hidden-music-btn {
+  display: none;
+}
+
+@media (max-width: 680px) {
+  .splash-screen .hero-card {
+    min-height: auto;
+    padding-top: 34px;
+    padding-bottom: 34px;
+  }
+
+  .splash-screen .hero-actions {
+    margin-top: 26px;
+  }
+
+  .splash-screen .btn.primary {
+    width: 100%;
+    max-width: 330px;
+    margin: 0 auto;
+  }
+}

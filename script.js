@@ -7,58 +7,75 @@ const observer = new IntersectionObserver((entries) => {
 
 revealEls.forEach(el => observer.observe(el));
 
+const startBtn = document.getElementById("startBtn");
 const musicBtn = document.getElementById("musicBtn");
 const bgMusic = document.getElementById("bgMusic");
+const mainContent = document.getElementById("mainContent");
+const hero = document.getElementById("inicio");
 
-let musicErrorShown = false;
-
-bgMusic.addEventListener("error", () => {
-  musicBtn.textContent = "No encuentro la música ⚠️";
-  if (!musicErrorShown) {
-    musicErrorShown = true;
-    alert("No encuentro la canción. Revisa que el archivo esté exactamente en: assets/music/nuestra-cancion.mp3");
-  }
-});
-
-musicBtn.addEventListener("click", async () => {
+async function playMusic() {
   try {
     bgMusic.volume = 0.55;
-
-    if (bgMusic.paused) {
-      bgMusic.load();
-      await bgMusic.play();
-      musicBtn.textContent = "Pausar música 💞";
-    } else {
-      bgMusic.pause();
-      musicBtn.textContent = "Play música 🎵";
-    }
+    await bgMusic.play();
+    if (musicBtn) musicBtn.textContent = "Pausar música 💞";
   } catch (error) {
-    musicBtn.textContent = "No encuentro la música ⚠️";
-    alert(
-      "No pude reproducir la canción.\n\n" +
-      "Verifica esto:\n" +
-      "1. La canción debe estar dentro de: assets/music/\n" +
-      "2. Debe llamarse exactamente: nuestra-cancion.mp3\n" +
-      "3. Ojo: que no quede como nuestra-cancion.mp3.mp3\n" +
-      "4. Ábrelo con Live Server, no solo doble clic."
-    );
+    console.warn("No se pudo reproducir la música:", error);
   }
-});
+}
+
+function startExperience() {
+  playMusic();
+  hero.classList.add("hero-exit");
+
+  setTimeout(() => {
+    hero.style.display = "none";
+    mainContent.classList.add("show-main");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    document.querySelectorAll(".main-content .reveal").forEach((el, index) => {
+      setTimeout(() => el.classList.add("show"), index * 100);
+    });
+  }, 650);
+}
+
+if (startBtn) {
+  startBtn.addEventListener("click", startExperience);
+}
+
+if (musicBtn) {
+  musicBtn.addEventListener("click", async () => {
+    try {
+      bgMusic.volume = 0.55;
+      if (bgMusic.paused) {
+        await bgMusic.play();
+        musicBtn.textContent = "Pausar música 💞";
+      } else {
+        bgMusic.pause();
+        musicBtn.textContent = "Play música 🎵";
+      }
+    } catch (error) {
+      alert("No pude reproducir la canción. Revisa que esté en assets/music/nuestra-cancion.mp3");
+    }
+  });
+}
 
 const surpriseBtn = document.getElementById("surpriseBtn");
 const surpriseText = document.getElementById("surpriseText");
 
-surpriseBtn.addEventListener("click", () => {
-  surpriseText.classList.toggle("show");
-  surpriseBtn.textContent = surpriseText.classList.contains("show")
-    ? "Siempre te elegiré ❤️"
-    : "Toca aquí, mi amor 🦋";
-});
+if (surpriseBtn && surpriseText) {
+  surpriseBtn.addEventListener("click", () => {
+    surpriseText.classList.toggle("show");
+    surpriseBtn.textContent = surpriseText.classList.contains("show")
+      ? "Siempre te elegiré ❤️"
+      : "Toca aquí, mi amor 🦋";
+  });
+}
 
 const petalsContainer = document.getElementById("petals");
 const symbols = ["♥", "♡", "🦋", "💕", "❤"];
 
 function createPetal() {
+  if (!petalsContainer) return;
   const petal = document.createElement("span");
   petal.className = "petal";
   petal.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -67,7 +84,6 @@ function createPetal() {
   petal.style.animationDuration = (Math.random() * 5 + 6) + "s";
   petal.style.color = Math.random() > 0.5 ? "#7b1e35" : "#c55a73";
   petalsContainer.appendChild(petal);
-
   setTimeout(() => petal.remove(), 11000);
 }
 
