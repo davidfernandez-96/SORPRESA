@@ -24,51 +24,80 @@ const hero = document.getElementById("inicio");
 const playlist = [
   "assets/music/nuestra-cancion.mp3",
   "assets/music/nuestra-cancion-2.mp3"
-  // Si agregas otra canción, pon una coma arriba y agrega:
+  // Si agregas otra cancion, pon una coma arriba y agrega:
   // "assets/music/nuestra-cancion-3.mp3"
 ];
 
+const playLabel = "Play m\u00fasica \ud83c\udfb5";
+const pauseLabel = "Pausar m\u00fasica \ud83d\udc9e";
 let currentSong = 0;
+let isChangingSong = false;
 
-if (bgMusic && playlist.length > 0) {
-  bgMusic.src = playlist[currentSong];
+function setMusicButton(isPlaying) {
+  if (!musicBtn) return;
+  musicBtn.textContent = isPlaying ? pauseLabel : playLabel;
 }
 
-/* Cuando termina una canción, pasa a la siguiente.
-   Cuando llega a la última, vuelve a empezar desde la primera. */
-if (bgMusic) {
-  bgMusic.addEventListener("ended", async () => {
-    currentSong++;
+function loadCurrentSong() {
+  if (!bgMusic || playlist.length === 0) return;
 
-    if (currentSong >= playlist.length) {
-      currentSong = 0;
-    }
+  bgMusic.src = playlist[currentSong];
+  bgMusic.load();
+}
 
-    bgMusic.src = playlist[currentSong];
+function moveToNextSong() {
+  currentSong = (currentSong + 1) % playlist.length;
+}
 
-    try {
-      await bgMusic.play();
-    } catch (error) {
-      console.warn("No se pudo reproducir la siguiente canción:", error);
-    }
+async function playLoadedSong() {
+  if (!bgMusic || playlist.length === 0) return;
+
+  bgMusic.volume = 0.55;
+
+  if (!bgMusic.getAttribute("src")) {
+    loadCurrentSong();
+  }
+
+  await bgMusic.play();
+  setMusicButton(true);
+}
+
+async function playNextSong() {
+  if (!bgMusic || playlist.length === 0 || isChangingSong) return;
+
+  isChangingSong = true;
+  moveToNextSong();
+  loadCurrentSong();
+
+  try {
+    await playLoadedSong();
+  } catch (error) {
+    console.warn("No se pudo reproducir la siguiente cancion:", error);
+    setMusicButton(false);
+  } finally {
+    isChangingSong = false;
+  }
+}
+
+if (bgMusic && playlist.length > 0) {
+  loadCurrentSong();
+
+  /* Cuando termina una cancion, pasa a la siguiente.
+     Cuando llega a la ultima, vuelve a empezar desde la primera. */
+  bgMusic.addEventListener("ended", playNextSong);
+
+  bgMusic.addEventListener("error", () => {
+    console.warn("No se pudo cargar esta cancion:", playlist[currentSong]);
+    playNextSong();
   });
 }
 
 async function playMusic() {
   try {
-    bgMusic.volume = 0.55;
-
-    if (!bgMusic.src) {
-      bgMusic.src = playlist[currentSong];
-    }
-
-    await bgMusic.play();
-
-    if (musicBtn) {
-      musicBtn.textContent = "Pausar música 💞";
-    }
+    await playLoadedSong();
   } catch (error) {
-    console.warn("No se pudo reproducir la música:", error);
+    console.warn("No se pudo reproducir la musica:", error);
+    setMusicButton(false);
   }
 }
 
@@ -94,22 +123,16 @@ if (startBtn) {
 if (musicBtn) {
   musicBtn.addEventListener("click", async () => {
     try {
-      bgMusic.volume = 0.55;
-
-      if (!bgMusic.src) {
-        bgMusic.src = playlist[currentSong];
-      }
-
       if (bgMusic.paused) {
-        await bgMusic.play();
-        musicBtn.textContent = "Pausar música 💞";
+        await playLoadedSong();
       } else {
         bgMusic.pause();
-        musicBtn.textContent = "Play música 🎵";
+        setMusicButton(false);
       }
     } catch (error) {
+      setMusicButton(false);
       alert(
-        "No pude reproducir la canción. Revisa que las canciones estén en assets/music/ y que se llamen exactamente como en la playlist."
+        "No pude reproducir la cancion. Revisa que las canciones esten en assets/music/ y que se llamen exactamente como en la playlist."
       );
     }
   });
@@ -122,13 +145,13 @@ if (surpriseBtn && surpriseText) {
   surpriseBtn.addEventListener("click", () => {
     surpriseText.classList.toggle("show");
     surpriseBtn.textContent = surpriseText.classList.contains("show")
-      ? "Siempre te elegiré ❤️"
-      : "Toca aquí, mi amor 🦋";
+      ? "Siempre te elegir\u00e9 \u2764\ufe0f"
+      : "Toca aqu\u00ed, mi amor \ud83e\udd8b";
   });
 }
 
 const petalsContainer = document.getElementById("petals");
-const symbols = ["♥", "♡", "🦋", "💕", "❤"];
+const symbols = ["\u2665", "\u2661", "\ud83e\udd8b", "\ud83d\udc95", "\u2764"];
 
 function createPetal() {
   if (!petalsContainer) return;
