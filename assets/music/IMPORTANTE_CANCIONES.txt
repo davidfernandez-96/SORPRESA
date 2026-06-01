@@ -1,0 +1,6 @@
+Para que suenen varias canciones, coloca aquí:
+
+1) nuestra-cancion.mp3
+2) nuestra-cancion-2.mp3
+
+Si agregas más canciones, también debes agregarlas en script.js dentro de const playlist.
